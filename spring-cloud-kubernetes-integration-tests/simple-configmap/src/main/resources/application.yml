@@ -1,7 +1,7 @@
 server:
   port: 8080
 
-# we enable some of the management endpoints to make it possible to restart the application
+# 我们启用了一些管理端点，以便可以重新启动应用程序
 management:
   endpoint:
     restart:

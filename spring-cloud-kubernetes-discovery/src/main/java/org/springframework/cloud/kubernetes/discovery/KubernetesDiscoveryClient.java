@@ -106,12 +106,15 @@ public class KubernetesDiscoveryClient implements DiscoveryClient {
 		List<ServiceInstance> instances = new ArrayList<>();
 		if (!subsets.isEmpty()) {
 
+			// 子集合不为空
 			final Service service = this.client.services().withName(serviceId).get();
 
 			final Map<String, String> serviceMetadata = new HashMap<>();
+			// 获得k8s元数据
 			KubernetesDiscoveryProperties.Metadata metadataProps = this.properties
 					.getMetadata();
 			if (metadataProps.isAddLabels()) {
+				// k8s label 标签在元数据中
 				Map<String, String> labelMetadata = getMapWithPrefixedKeys(
 						service.getMetadata().getLabels(),
 						metadataProps.getLabelsPrefix());
@@ -121,6 +124,8 @@ public class KubernetesDiscoveryClient implements DiscoveryClient {
 				serviceMetadata.putAll(labelMetadata);
 			}
 			if (metadataProps.isAddAnnotations()) {
+				// ServiceInstance 中包含k8s 注解
+				// 结果加上前缀
 				Map<String, String> annotationMetadata = getMapWithPrefixedKeys(
 						service.getMetadata().getAnnotations(),
 						metadataProps.getAnnotationsPrefix());
@@ -131,11 +136,11 @@ public class KubernetesDiscoveryClient implements DiscoveryClient {
 			}
 
 			for (EndpointSubset s : subsets) {
-				// Extend the service metadata map with per-endpoint port information (if
-				// requested)
+				// 使用每个端点端口信息扩展服务元数据映射（如果请求）
 				Map<String, String> endpointMetadata = new HashMap<>(serviceMetadata);
 				if (metadataProps.isAddPorts()) {
 					Map<String, String> ports = s.getPorts().stream()
+						// 过滤端口名不为空的
 							.filter(port -> !StringUtils.isEmpty(port.getName()))
 							.collect(toMap(EndpointPort::getName,
 									port -> Integer.toString(port.getPort())));
@@ -151,9 +156,11 @@ public class KubernetesDiscoveryClient implements DiscoveryClient {
 				for (EndpointAddress endpointAddress : addresses) {
 					String instanceId = null;
 					if (endpointAddress.getTargetRef() != null) {
+						// 获得instanceId
 						instanceId = endpointAddress.getTargetRef().getUid();
 					}
 
+					// 找到主端口
 					EndpointPort endpointPort = findEndpointPort(s);
 					instances.add(new KubernetesServiceInstance(instanceId, serviceId,
 							endpointAddress, endpointPort, endpointMetadata,
@@ -179,6 +186,8 @@ public class KubernetesDiscoveryClient implements DiscoveryClient {
 		else {
 			Predicate<EndpointPort> portPredicate;
 			if (!StringUtils.isEmpty(properties.getPrimaryPortName())) {
+				// 如果设置了给定名称的端口，即为主端口
+				// 判断端口名称是否是主端口
 				portPredicate = port -> properties.getPrimaryPortName()
 						.equalsIgnoreCase(port.getName());
 			}
@@ -202,16 +211,16 @@ public class KubernetesDiscoveryClient implements DiscoveryClient {
 		return endpoints.getSubsets();
 	}
 
-	// returns a new map that contain all the entries of the original map
-	// but with the keys prefixed
-	// if the prefix is null or empty, the map itself is returned (unchanged of course)
+	//返回一个包含原始地图所有条目的新地图
+	//但前缀是键
+	//如果前缀为null或为空，则返回地图本身（当然不变）
 	private Map<String, String> getMapWithPrefixedKeys(Map<String, String> map,
 			String prefix) {
 		if (map == null) {
 			return new HashMap<>();
 		}
 
-		// when the prefix is empty just return an map with the same entries
+		// 当前缀为空时，只返回具有相同条目的map
 		if (!StringUtils.hasText(prefix)) {
 			return map;
 		}
@@ -219,6 +228,7 @@ public class KubernetesDiscoveryClient implements DiscoveryClient {
 		final Map<String, String> result = new HashMap<>();
 		map.forEach((k, v) -> result.put(prefix + k, v));
 
+		// 循环加上前缀，返回
 		return result;
 	}
 

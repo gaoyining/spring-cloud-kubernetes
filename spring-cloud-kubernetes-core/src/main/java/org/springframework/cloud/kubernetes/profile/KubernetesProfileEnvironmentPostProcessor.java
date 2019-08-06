@@ -34,7 +34,7 @@ public class KubernetesProfileEnvironmentPostProcessor
 	private static final Log LOG = LogFactory
 			.getLog(KubernetesProfileEnvironmentPostProcessor.class);
 
-	// Before ConfigFileApplicationListener so values there can use these ones
+	// 在ConfigFileApplicationListener之前，可以使用这些值
 	private static final int ORDER = ConfigFileApplicationListener.DEFAULT_ORDER - 1;
 
 	private static final String KUBERNETES_PROFILE = "kubernetes";
@@ -45,7 +45,9 @@ public class KubernetesProfileEnvironmentPostProcessor
 		final StandardPodUtils podUtils = new StandardPodUtils(
 				new DefaultKubernetesClient());
 		if (podUtils.isInsideKubernetes()) {
+			// 是在k8s环境
 			if (hasKubernetesProfile(environment)) {
+				// 判断有profile是kubernetes
 				if (LOG.isDebugEnabled()) {
 					LOG.debug("'kubernetes' already in list of active profiles");
 				}
@@ -58,6 +60,7 @@ public class KubernetesProfileEnvironmentPostProcessor
 			}
 		}
 		else {
+			// 不在k8s环境
 			if (LOG.isDebugEnabled()) {
 				LOG.warn(
 						"Not running inside kubernetes. Skipping 'kubernetes' profile activation.");

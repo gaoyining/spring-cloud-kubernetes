@@ -78,7 +78,7 @@ public class KubernetesAutoConfiguration {
 			KubernetesClientProperties kubernetesClientProperties) {
 		Config base = Config.autoConfigure(null);
 		Config properties = new ConfigBuilder(base)
-				// Only set values that have been explicitly specified
+				// 仅设置已明确指定的值
 				.withMasterUrl(or(kubernetesClientProperties.getMasterUrl(),
 						base.getMasterUrl()))
 				.withApiVersion(or(kubernetesClientProperties.getApiVersion(),
@@ -105,7 +105,7 @@ public class KubernetesAutoConfiguration {
 				.withClientCertData(or(kubernetesClientProperties.getClientCertData(),
 						base.getClientCertData()))
 
-				// No magic is done for the properties below so we leave them as is.
+				// 下面的属性没有任何魔力，所以我们保持原样。
 				.withClientKeyAlgo(or(kubernetesClientProperties.getClientKeyAlgo(),
 						base.getClientKeyAlgo()))
 				.withClientKeyPassphrase(
@@ -147,12 +147,20 @@ public class KubernetesAutoConfiguration {
 		return new DefaultKubernetesClient(config);
 	}
 
+	/**
+	 * 创建pod
+	 * @param client
+	 * @return
+	 */
 	@Bean
 	@ConditionalOnMissingBean
 	public StandardPodUtils kubernetesPodUtils(KubernetesClient client) {
 		return new StandardPodUtils(client);
 	}
 
+	/**
+	 * 监控检查
+	 */
 	@Configuration
 	@ConditionalOnClass(HealthIndicator.class)
 	protected static class KubernetesActuatorConfiguration {

@@ -37,8 +37,10 @@ public class KubernetesHealthIndicator extends AbstractHealthIndicator {
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
 		try {
+			// 获得当前pod
 			Pod current = this.utils.currentPod().get();
 			if (current != null) {
+				// pod不为空
 				builder.up().withDetail("inside", true)
 						.withDetail("namespace", current.getMetadata().getNamespace())
 						.withDetail("podName", current.getMetadata().getName())
@@ -49,6 +51,7 @@ public class KubernetesHealthIndicator extends AbstractHealthIndicator {
 						.withDetail("hostIp", current.getStatus().getHostIP());
 			}
 			else {
+				// pod为空
 				builder.up().withDetail("inside", false);
 			}
 		}

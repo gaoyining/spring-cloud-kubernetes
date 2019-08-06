@@ -26,16 +26,16 @@ import io.fabric8.kubernetes.client.Watcher;
 import io.fabric8.kubernetes.client.dsl.FilterWatchListDeletable;
 
 /**
- * A regular java.util.function that is used to hide the complexity of the
- * KubernetesClient interfaces.
+ * 一个常规的java.util.function，用于隐藏的复杂性
+ * KubernetesClient接口。
  *
- * It's meant to be used to abstract things like:
+ * 它意味着用于抽象的东西，如：
  *
  * client.services() client.services().withLabel("key", "value")
  * client.services().withoutLabel("key")
  *
- * The result of the application of the function can then be used for example to list the
- * services like so:
+ * 然后可以使用该函数的应用结果来列出该函数
+ *服务如下：
  *
  * function.apply(client).list()
  *

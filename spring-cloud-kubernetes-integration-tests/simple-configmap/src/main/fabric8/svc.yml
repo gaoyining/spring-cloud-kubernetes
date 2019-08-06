@@ -1,4 +1,4 @@
-# We are using an FMP fragment to ensure that NodePort is used correctly
+# 我们使用FMP片段来确保正确使用NodePort
 spec:
   ports:
     - protocol: TCP

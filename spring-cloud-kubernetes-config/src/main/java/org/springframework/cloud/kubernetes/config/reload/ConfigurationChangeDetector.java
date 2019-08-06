@@ -142,6 +142,7 @@ public abstract class ConfigurationChangeDetector {
 		LinkedList<PropertySource<?>> sources = toLinkedList(
 				this.environment.getPropertySources());
 		while (!sources.isEmpty()) {
+			// 取得第一个
 			PropertySource<?> source = sources.pop();
 			if (source instanceof CompositePropertySource) {
 				CompositePropertySource comp = (CompositePropertySource) source;
@@ -164,8 +165,7 @@ public abstract class ConfigurationChangeDetector {
 	}
 
 	/**
-	 * Returns a list of MapPropertySource that correspond to the current state of the
-	 * system. This only handles the PropertySource objects that are returned.
+	 *返回与系统当前状态对应的MapPropertySource列表。这只处理返回的PropertySource对象。
 	 * @param propertySourceLocator Spring's property source locator
 	 * @param environment Spring environment
 	 * @return a list of MapPropertySource that correspond to the current state of the

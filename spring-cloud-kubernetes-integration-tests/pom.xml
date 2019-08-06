@@ -25,8 +25,8 @@
 		<rest-assured.version>3.2.0</rest-assured.version>
 
 		<!--
-          The port on localhost where the application will listen to from outside the cluster
-          Will be used to construct a NodePort
+          应用程序将从群集外部侦听的localhost上的端口
+          将用于构造NodePort
         -->
 		<nodeport.value>32222</nodeport.value>
 	</properties>
@@ -61,8 +61,8 @@
 						<version>${fmp.version}</version>
 						<configuration>
 							<!--
-                                FMP can work with Openshift as well, so here we explicitly force it
-                                to work with vanilla Kubernetes and Docker builds
+                                FMP也可以与Openshift一起使用，所以在这里我们明确强制它
+                                与vanilla Kubernetes和Docker构建合作
                             -->
 							<buildStrategy>docker</buildStrategy>
 							<mode>kubernetes</mode>

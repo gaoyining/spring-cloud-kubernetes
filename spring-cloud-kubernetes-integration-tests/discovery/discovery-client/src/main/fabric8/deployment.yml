@@ -1,5 +1,5 @@
-# We need this fragment in order for the kubernetes client to talk to
-# the Kubernetes API without caring about proper certificates
+#我们需要这个片段才能让kubernetes客户端与之交谈
+#Kubernetes API，无需关心适当的证书
 spec:
   template:
     spec:

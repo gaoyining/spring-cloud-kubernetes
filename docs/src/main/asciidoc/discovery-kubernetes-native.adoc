@@ -1,11 +1,11 @@
-== Kubernetes native service discovery
+== Kubernetes本地服务发现
 
-Kubernetes itself is capable of (server side) service discovery (see: https://kubernetes.io/docs/concepts/services-networking/service/#discovering-services).
-Using native kubernetes service discovery ensures compatibility with additional tooling, such as Istio (https://istio.io), a service mesh that is capable of load balancing, ribbon, circuit breaker, failover, and much more.
+Kubernetes本身能够（服务器端）服务发现（参见：https：//kubernetes.io/docs/concepts/services-networking/service/#discovering-services）。
+使用本机kubernetes服务发现可确保与其他工具兼容，例如Istio（https://istio.io），能够实现负载平衡，功能区，断路器，故障转移等的服务网格。
 
-The caller service then need only refer to names resolvable in a particular Kubernetes cluster. A simple implementation might use a spring `RestTemplate` that refers to a fully qualified domain name (FQDN), such as `https://{service-name}.{namespace}.svc.{cluster}.local:{service-port}`.
+然后，调用者服务只需要引用特定Kubernetes集群中可解析的名称。一个简单的实现可能使用一个引用完全限定域名（FQDN）的spring`RestTemplate`，例如`https：// {service-name}。{namespace} .svc。{cluster} .local：{service-端口}`。
 
-Additionally, you can use Hystrix for:
+此外，您可以使用Hystrix：
 
-* Circuit breaker implementation on the caller side, by annotating the spring boot application class with `@EnableCircuitBreaker`
-* Fallback functionality, by annotating the respective method with `@HystrixCommand(fallbackMethod=`
+*通过使用`@ EnableCircuitBreaker'注释弹簧启动应用程序类，在调用者端实现断路器
+*回退功能，通过使用`@HystrixCommand（fallbackMethod =`）注释相应的方法

@@ -33,8 +33,7 @@ import org.springframework.core.env.MapPropertySource;
 import org.springframework.scheduling.annotation.Scheduled;
 
 /**
- * A change detector that periodically retrieves secrets and configmaps and fire a reload
- * when something changes.
+ * 一个变化检测器，定期检索秘密和配置，并在发生变化时触发重新加载。
  *
  * @author Nicola Ferraro
  */
@@ -59,6 +58,7 @@ public class PollingConfigurationChangeDetector extends ConfigurationChangeDetec
 
 	@PostConstruct
 	public void init() {
+		// Kubernetes轮询配置更改检测器已激活
 		this.log.info("Kubernetes polling configuration change detector activated");
 	}
 

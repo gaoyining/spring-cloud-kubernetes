@@ -55,14 +55,12 @@ public class KubernetesDiscoveryProperties {
 	};
 
 	/**
-	 * If set, then only the services matching these labels will be fetched from the
-	 * Kubernetes API server.
+	 *如果设置，则只从Kubernetes API服务器获取与这些标签匹配的服务。
 	 */
 	private Map<String, String> serviceLabels = new HashMap<>();
 
 	/**
-	 * If set then the port with a given name is used as primary when multiple ports are
-	 * defined for a service.
+	 * 如果设置，则在为服务定义多个端口时，将具有给定名称的端口用作主端口。
 	 */
 	private String primaryPortName;
 
@@ -134,43 +132,43 @@ public class KubernetesDiscoveryProperties {
 	}
 
 	/**
-	 * Metadata properties.
+	 * 元数据属性。
 	 */
 	public class Metadata {
 
 		/**
-		 * When set, the Kubernetes labels of the services will be included as metadata of
-		 * the returned ServiceInstance.
+		 * 设置后，服务的Kubernetes标签将作为元数据包含在内
+		 * 返回的ServiceInstance。
 		 */
 		private boolean addLabels = true;
 
 		/**
-		 * When addLabels is set, then this will be used as a prefix to the key names in
-		 * the metadata map.
+		 * 设置addLabels后，这将用作键名称的前缀
+		 * 元数据map。
 		 */
 		private String labelsPrefix;
 
 		/**
-		 * When set, the Kubernetes annotations of the services will be included as
-		 * metadata of the returned ServiceInstance.
+		 *设置后，将包含服务的Kubernetes 注解
+		 *返回的ServiceInstance的元数据。
 		 */
 		private boolean addAnnotations = true;
 
 		/**
-		 * When addAnnotations is set, then this will be used as a prefix to the key names
-		 * in the metadata map.
+		 *当设置addAnnotations时，它将用作键名的前缀
+		 *在元数据map中。
 		 */
 		private String annotationsPrefix;
 
 		/**
-		 * When set, any named Kubernetes service ports will be included as metadata of
-		 * the returned ServiceInstance.
+		 * 设置后，任何已命名的Kubernetes服务端口都将作为元数据包含在内
+		 * 返回的ServiceInstance。
 		 */
 		private boolean addPorts = true;
 
 		/**
-		 * When addPorts is set, then this will be used as a prefix to the key names in
-		 * the metadata map.
+		 * 设置addPorts后，这将用作键名称的前缀
+		 * 元数据map。
 		 */
 		private String portsPrefix = "port.";
 

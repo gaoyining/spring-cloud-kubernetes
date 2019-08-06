@@ -1,24 +1,28 @@
-== Kubernetes Ecosystem Awareness
+== Kubernetes生态系统意识
 
-All of the features described earlier in this guide work equally well, regardless of whether your application is running inside
-Kubernetes. This is really helpful for development and troubleshooting.
-From a development point of view, this lets you start your Spring Boot application and debug one
-of the modules that is part of this project. You need not deploy it in Kubernetes,
-as the code of the project relies on the
-https://github.com/fabric8io/kubernetes-client[Fabric8 Kubernetes Java client], which is a fluent DSL that can
-communicate by using `http` protocol to the REST API of the Kubernetes Server.
+无论您的应用程序是否在内部运行，本指南前面介绍的所有功能都同样有效
+Kubernetes。这对开发和故障排除非常有用。
+从开发的角度来看，这可以让您启动Spring Boot应用程序并进行调试
+作为该项目一部分的模块。你不需要在Kubernetes中部署它，
+因为项目的代码依赖于
+https://github.com/fabric8io/kubernetes-client[Fabric8Kubernetes Java客户端]，
+这是一个流畅的DSL，可以
+通过使用`http`协议与Kubernetes服务器的REST API进行通信。
 
-=== Kubernetes Profile Autoconfiguration
+=== Kubernetes配置文件自动配置
 
-When the application runs as a pod inside Kubernetes, a Spring profile named `kubernetes` automatically gets activated.
-This lets you customize the configuration, to define beans that are applied when the Spring Boot application is deployed
-within the Kubernetes platform (for example, different development and production configuration).
+当应用程序作为Kubernetes中的pod运行时，名为`kubernetes`的Spring配置文件会自动激活。
+这使您可以自定义配置，以定义部署Spring Boot应用程序时应用的Bean
+在Kubernetes平台内（例如，不同的开发和生产配置）。
 
-=== Istio Awareness
+=== Istio意识
 
-When you include the `spring-cloud-kubernetes-istio` module in the application classpath, a new profile is added to the application,
-provided the application is running inside a Kubernetes Cluster with https://istio.io[Istio] installed. You can then use
-spring `@Profile("istio")` annotations in your Beans and `@Configuration` classes.
+当您在应用程序类路径中包含`spring-cloud-kubernetes-istio`模块时，
+会向应用程序添加一个新的配置文件，
+如果应用程序在Kubernetes集群中运行，并且安装了https://istio.io [Istio]。
+然后你可以使用
+在你的Beans和`@Configuration`类中弹出`@Profile（“istio”）`注释。
 
-The Istio awareness module uses  `me.snowdrop:istio-client` to interact with Istio APIs, letting us discover traffic rules, circuit breakers, and so on,
-making it easy for our Spring Boot applications to consume this data to dynamically configure themselves according to the environment.
+Istio意识模块使用`me.snowdrop：istio-client`与Istio API交互，
+让我们发现交通规则，断路​​器等，
+使我们的Spring Boot应用程序可以轻松地使用这些数据根据环境动态配置自己。

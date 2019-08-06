@@ -19,7 +19,7 @@ package org.springframework.cloud.kubernetes;
 import java.util.function.Supplier;
 
 /**
- * Lazy instantiation utility class.
+ * Lazy instantiation实用程序类。
  *
  * @param <T> return type
  * @author Ioannis Canellos

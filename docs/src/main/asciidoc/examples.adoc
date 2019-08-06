@@ -1,12 +1,15 @@
 == Examples
 
-Spring Cloud Kubernetes tries to make it transparent for your applications to consume Kubernetes Native Services by
-following the Spring Cloud interfaces.
+Spring Cloud Kubernetes试图让您的应用程序透明化，以便使用Kubernetes Native Services
+遵循Spring Cloud接口。
 
-In your applications, you need to add the `spring-cloud-kubernetes-discovery` dependency to your classpath and remove any other dependency that contains a `DiscoveryClient` implementation (that is, a Eureka discovery client).
-The same applies for `PropertySourceLocator`, where you need to add to the classpath the `spring-cloud-kubernetes-config` and remove any other dependency that contains a `PropertySourceLocator` implementation (that is, a configuration server client).
+在您的应用程序中，您需要将“spring-cloud-kubernetes-discovery”依赖项添加到类路径中，
+并删除包含“DiscoveryClient”实现的任何其他依赖项（即Eureka发现客户端）。
+这同样适用于`PropertySourceLocator`，
+你需要在类路径中添加`spring-cloud-kubernetes-config`并删除包含`PropertySourceLocator`
+实现的任何其他依赖项（即配置服务器客户端）。
 
-The following projects highlight the usage of these dependencies and demonstrate how you can use these libraries from any Spring Boot application:
+以下项目重点介绍了这些依赖项的用法，并演示了如何在任何Spring Boot应用程序中使用这些库：
 
 * https://github.com/spring-cloud/spring-cloud-kubernetes/tree/master/spring-cloud-kubernetes-examples[Spring Cloud Kubernetes Examples]: the ones located inside this repository.
 * Spring Cloud Kubernetes Full Example: Minions and Boss

@@ -1,4 +1,4 @@
-# we are using an FMP fragment to ensure that NodePort is used correctly
+#我们正在使用FMP片段来确保正确使用NodePort
 kind: Service
 apiVersion: v1
 metadata:

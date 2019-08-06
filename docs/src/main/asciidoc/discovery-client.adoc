@@ -1,14 +1,12 @@
 == DiscoveryClient for Kubernetes
 
-This project provides an implementation of https://github.com/spring-cloud/spring-cloud-commons/blob/master/spring-cloud-commons/src/main/java/org/springframework/cloud/client/discovery/DiscoveryClient.java[Discovery Client]
-for https://kubernetes.io[Kubernetes].
-This client lets you query Kubernetes endpoints (see https://kubernetes.io/docs/user-guide/services/[services]) by name.
-A service is typically exposed by the Kubernetes API server as a collection of endpoints that represent `http` and `https` addresses and that a client can
-access from a Spring Boot application running as a pod. This discovery feature is also used by the Spring Cloud Kubernetes Ribbon project
-to fetch the list of the endpoints defined for an application to be load balanced.
-
-This is something that you get for free by adding the following dependency inside your project:
-
+该项目提供了https://github.com/spring-cloud/spring-cloud-commons/blob/master/spring-cloud-commons/src/main/java/org/springframework/cloud/client/discovery/的实现。 DiscoveryClient.java [发现客户端]
+对于https://kubernetes.io [Kubernetes]。
+此客户端允许您按名称查询Kubernetes端点（请参阅https://kubernetes.io/docs/user-guide/services/[services]）。
+服务通常由Kubernetes API服务器公开，作为代表`http`和`https`地址的端点集合，客户端可以
+从作为pod运行的Spring Boot应用程序访问。 Spring Cloud Kubernetes Ribbon项目也使用此发现功能
+获取为要负载平衡的应用程序定义的端点列表。
+这是通过在项目中添加以下依赖项而免费获得的：
 ====
 [source,xml]
 ----
@@ -19,8 +17,7 @@ This is something that you get for free by adding the following dependency insid
 ----
 ====
 
-To enable loading of the `DiscoveryClient`, add `@EnableDiscoveryClient` to the according configuration or application class, as the following example shows:
-
+要启用`DiscoveryClient`的加载，请将`@ EnableDiscoveryClient`添加到相应的配置或应用程序类，如以下示例所示：
 ====
 [source,java]
 ----
@@ -34,18 +31,15 @@ public class Application {
 ----
 ====
 
-Then you can inject the client in your code simply by autowiring it, as the following example shows:
-
+然后，您可以通过自动装配将代码注入客户端，如下例所示：
 ====
 [source,java]
 ----
 @Autowired
-private DiscoveryClient discoveryClient;
-----
+private DiscoveryClient discoveryClient;----
 ====
 
-If, for any reason, you need to disable the `DiscoveryClient`, you can set the following property in `application.properties`:
-
+如果出于任何原因需要禁用`DiscoveryClient`，可以在`application.properties`中设置以下属性：
 ====
 [source]
 ----
@@ -53,5 +47,5 @@ spring.cloud.kubernetes.discovery.enabled=false
 ----
 ====
 
-Some Spring Cloud components use the `DiscoveryClient` in order to obtain information about the local service instance. For
-this to work, you need to align the Kubernetes service name with the `spring.application.name` property.
+一些Spring Cloud组件使用`DiscoveryClient`来获取有关本地服务实例的信息。对于
+要使用它，您需要将Kubernetes服务名称与`spring.application.name`属性对齐。

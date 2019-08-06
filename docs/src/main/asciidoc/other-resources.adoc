@@ -1,7 +1,6 @@
 == Other Resources
 
-This section lists other resources, such as presentations (slides) and videos about Spring Cloud Kubernetes.
-
+本节列出了其他资源，例如演示文稿（幻灯片）和有关Spring Cloud Kubernetes的视频。
 * https://salaboy.com/2018/09/27/the-s1p-experience/[S1P Spring Cloud on PKS]
 * https://salaboy.com/2018/07/18/ljc-july-18-spring-cloud-docker-k8s/[Spring Cloud, Docker, Kubernetes -> London Java Community July 2018]
 

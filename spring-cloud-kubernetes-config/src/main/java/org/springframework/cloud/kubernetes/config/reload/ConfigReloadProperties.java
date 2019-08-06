@@ -21,7 +21,7 @@ import java.time.Duration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * General configuration for the configuration reload.
+ * 配置重新加载的常规配置。
  *
  * @author Nicola Ferraro
  */
@@ -29,42 +29,42 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class ConfigReloadProperties {
 
 	/**
-	 * Enables the Kubernetes configuration reload on change.
+	 * 在更改时启用Kubernetes配置重新加载。
 	 */
 	private boolean enabled = false;
 
 	/**
-	 * Enables monitoring on config maps to detect changes.
+	 * 启用对配置映射的监视以检测更改。
 	 */
 	private boolean monitoringConfigMaps = true;
 
 	/**
-	 * Enables monitoring on secrets to detect changes.
+	 * 启用对秘密的监控以检测更改。
 	 */
 	private boolean monitoringSecrets = false;
 
 	/**
-	 * Sets the reload strategy for Kubernetes configuration reload on change.
+	 * 设置更改时Kubernetes配置重新加载的重新加载策略。
 	 */
 	private ReloadStrategy strategy = ReloadStrategy.REFRESH;
 
 	/**
-	 * Sets the detection mode for Kubernetes configuration reload.
+	 * 设置Kubernetes配置重新加载的检测模式。
 	 */
 	private ReloadDetectionMode mode = ReloadDetectionMode.EVENT;
 
 	/**
-	 * Sets the polling period to use when the detection mode is POLLING.
+	 * 设置检测模式为POLLING时使用的轮询周期。
 	 */
 	private Duration period = Duration.ofMillis(15000L);
 
 	/**
-	 * If Restart or Shutdown strategies are used, Spring Cloud Kubernetes waits a random
-	 * amount of time before restarting. This is done in order to avoid having all
-	 * instances of the same application restart at the same time. This property
-	 * configures the maximum of amount of wait time from the moment the signal is
-	 * received that a restart is needed until the moment the restart is actually
-	 * triggered
+	 * 如果使用重启或关闭策略，Spring Cloud Kubernetes会随机等待
+	 *重启前的时间。这样做是为了避免全部
+	 *同一应用程序的实例同时重启。这个性质
+	 *配置从信号开始的最大等待时间
+	 *收到需要重新启动，直到实际重启为止
+	 *触发
 	 */
 	private Duration maxWaitForRestart = Duration.ofSeconds(2);
 
@@ -133,21 +133,20 @@ public class ConfigReloadProperties {
 	public enum ReloadStrategy {
 
 		/**
-		 * Fire a refresh of beans annotated with @ConfigurationProperties
-		 * or @RefreshScope.
+		 * 触发使用@ConfigurationProperties或@RefreshScope注释的bean的刷新。
 		 */
 		REFRESH,
 
 		/**
-		 * Restarts the Spring ApplicationContext to apply the new configuration.
+		 * 重新启动Spring ApplicationContext以应用新配置。
 		 */
 		RESTART_CONTEXT,
 
 		/**
-		 * Shuts down the Spring ApplicationContext to activate a restart of the
-		 * container. Make sure that the lifecycle of all non-daemon threads is bound to
-		 * the ApplicationContext and that a replication controller or replica set is
-		 * configured to restart the pod.
+		 * 关闭Spring ApplicationContext以激活重启
+		 * 容器。确保绑定了所有非守护程序线程的生命周期
+		 * ApplicationContext以及复制控制器或副本集
+		 *配置为重新启动pod。
 		 */
 		SHUTDOWN
 
@@ -159,14 +158,14 @@ public class ConfigReloadProperties {
 	public enum ReloadDetectionMode {
 
 		/**
-		 * Enables a polling task that retrieves periodically all external properties and
-		 * fire a reload when they change.
+		 * 启用轮询任务，定期检索所有外部属性
+		 *当他们改变时重新加载。
 		 */
 		POLLING,
 
 		/**
-		 * Listens to Kubernetes events and checks if a reload is needed when configmaps
-		 * or secrets change.
+		 * 侦听Kubernetes事件并检查配置映射时是否需要重新加载
+		 * 或秘密改变。
 		 */
 		EVENT
 

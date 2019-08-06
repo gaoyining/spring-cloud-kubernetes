@@ -42,7 +42,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
- * Definition of beans needed for the automatic reload of configuration.
+ * 自动重新加载配置所需的bean的定义。
  *
  * @author Nicolla Ferraro
  */
@@ -56,7 +56,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class ConfigReloadAutoConfiguration {
 
 	/**
-	 * Configuration reload must be enabled explicitly.
+	 * 必须显式启用配置重新加载。
 	 */
 	@ConditionalOnProperty("spring.cloud.kubernetes.reload.enabled")
 	@ConditionalOnClass({ RestartEndpoint.class, ContextRefresher.class })

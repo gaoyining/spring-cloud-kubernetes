@@ -1,26 +1,26 @@
 == Kubernetes PropertySource implementations
 
-The most common approach to configuring your Spring Boot application is to create an `application.properties` or `applicaiton.yaml` or
-an `application-profile.properties` or `application-profile.yaml` file that contains key-value pairs that provide customization values to your
-application or Spring Boot starters. You can override these properties by specifying system properties or environment
-variables.
+配置Spring Boot应用程序的最常用方法是创建`application.properties`或`applicaiton.yaml`或
+一个`application-profile.properties`或`application-profile.yaml`文件，包含为您提供自定义值的键值对
+应用程序或Spring Boot启动程序。您可以通过指定系统属性或环境来覆盖这些属性
+变量。
 
 [[configmap-propertysource]]
 === Using a `ConfigMap` `PropertySource`
 
-Kubernetes provides a resource named https://kubernetes.io/docs/user-guide/configmap/[`ConfigMap`] to externalize the
-parameters to pass to your application in the form of key-value pairs or embedded `application.properties` or `application.yaml` files.
-The link:./spring-cloud-kubernetes-config[Spring Cloud Kubernetes Config] project makes Kubernetes `ConfigMap` instances available
-during application bootstrapping and triggers hot reloading of beans or Spring context when changes are detected on
-observed `ConfigMap` instances.
+Kubernetes提供了一个名为https://kubernetes.io/docs/user-guide/configmap/ [`ConfigMap`]的资源来外化
+以键值对或嵌入的`application.properties`或`application.yaml`文件的形式传递给应用程序的参数。
+链接：./ spring-cloud-kubernetes-config [Spring Cloud Kubernetes Config]项目使Kubernetes`ConfigMap`实例可用
+在应用程序引导期间，当检测到更改时触发Bean或Spring上下文的热重新加载
+观察到`ConfigMap`实例。
 
-The default behavior is to create a `ConfigMapPropertySource` based on a Kubernetes `ConfigMap` that has a `metadata.name` value of either the name of
-your Spring application (as defined by its `spring.application.name` property) or a custom name defined within the
-`bootstrap.properties` file under the following key: `spring.cloud.kubernetes.config.name`.
+默认行为是创建一个基于Kubernetes`ConfigMap`的`ConfigMapPropertySource`，其中`metadata.name`值的名称为
+您的Spring应用程序（由其`spring.application.name`属性定义）或在其中定义的自定义名称
+`bootstrap.properties`文件位于以下键下：`spring.cloud.kubernetes.config.name`。
 
-However, more advanced configuration is possible where you can use multiple `ConfigMap` instances.
-The `spring.cloud.kubernetes.config.sources` list makes this possible.
-For example, you could define the following `ConfigMap` instances:
+但是，可以使用多个`ConfigMap`实例进行更高级的配置。
+`spring.cloud.kubernetes.config.sources`列表使这成为可能。
+例如，您可以定义以下`ConfigMap`实例：
 
 ====
 [source,yaml]
@@ -44,20 +44,19 @@ spring:
 ----
 ====
 
-In the preceding example, if `spring.cloud.kubernetes.config.namespace` had not been set,
-the `ConfigMap` named `c1` would be looked up in the namespace that the application runs.
+在前面的示例中，如果尚未设置`spring.cloud.kubernetes.config.namespace`，
+名为`c1`的`ConfigMap`将在应用程序运行的命名空间中查找。
 
-Any matching `ConfigMap` that is found is processed as follows:
+找到的任何匹配的`ConfigMap`按如下方式处理：
 
-* Apply individual configuration properties.
-* Apply as `yaml` the content of any property named `application.yaml`.
-* Apply as a properties file the content of any property named `application.properties`.
+*应用单个配置属性。
+*作为`yaml`应用名为`application.yaml`的任何属性的内容。
+*作为属性文件应用名为`application.properties`的任何属性的内容。
 
-The single exception to the aforementioned flow is when the `ConfigMap` contains a *single* key that indicates
-the file is a YAML or properties file. In that case, the name of the key does NOT have to be `application.yaml` or
-`application.properties` (it can be anything) and the value of the property is treated correctly.
-This features facilitates the use case where the `ConfigMap` was created by using something like the following:
-
+上述流程的唯一例外是`ConfigMap`包含指示的* single *键
+该文件是YAML或属性文件。在这种情况下，密钥的名称不必是`application.yaml`或
+`application.properties`（它可以是任何东西）并且正确处理属性的值。
+此功能有助于使用以下内容创建`ConfigMap`的用例：
 ====
 [source]
 ----
@@ -65,14 +64,13 @@ kubectl create configmap game-config --from-file=/path/to/app-config.yaml
 ----
 ====
 
-Assume that we have a Spring Boot application named `demo` that uses the following properties to read its thread pool
-configuration.
+假设我们有一个名为`demo`的Spring Boot应用程序，它使用以下属性来读取其线程池
+组态。
 
 * `pool.size.core`
 * `pool.size.maximum`
 
-This can be externalized to config map in `yaml` format as follows:
-
+这可以外部化为以“yaml”格式配置映射，如下所示：
 ====
 [source,yaml]
 ----
@@ -86,8 +84,8 @@ data:
 ----
 ====
 
-Individual properties work fine for most cases. However, sometimes, embedded `yaml` is more convenient. In this case, we
-use a single property named `application.yaml` to embed our `yaml`, as follows:
+个别财产在大多数情但是，有时，嵌入式`yaml`更方便。在这种情况下，我们
+使用名为`application.yaml`的单个属性来嵌入我们的`yaml`，如下所示：
 
 ====
 [source,yaml]
@@ -105,8 +103,7 @@ data:
 ----
 ====
 
-The following example also works:
-
+以下示例也有效：
 ====
 [source,yaml]
 ----
@@ -123,11 +120,10 @@ data:
 ----
 ====
 
-You can also configure Spring Boot applications differently depending on active profiles that are merged together
-when the `ConfigMap` is read. You can provide different property values for different profiles by using an
-`application.properties` or `application.yaml` property, specifying profile-specific values, each in their own document
-(indicated by the `---` sequence), as follows:
-
+您还可以根据合并在一起的活动配置文件以不同方式配置Spring Boot应用程序
+当读取`ConfigMap`时。您可以使用a为不同的配置文件提供不同的属性值
+`application.properties`或`application.yaml`属性，指定特定于配置文件的值，每个值都在自己的文档中
+（由`---`序列表示），如下：
 ====
 [source,yaml]
 ----
@@ -156,8 +152,7 @@ data:
 ----
 ====
 
-In the preceding case, the configuration loaded into your Spring Application with the `development` profile is as follows:
-
+在前面的例子中，使用`development`配置文件加载到Spring应用程序中的配置如下：
 ====
 [source,yaml]
 ----
@@ -168,8 +163,7 @@ In the preceding case, the configuration loaded into your Spring Application wit
 ----
 ====
 
-However, if the `production` profile is active, the configuration becomes:
-
+但是，如果`production`配置文件处于活动状态，则配置将变为：
 ====
 [source,yaml]
 ----
@@ -180,13 +174,11 @@ However, if the `production` profile is active, the configuration becomes:
 ----
 ====
 
-If both profiles are active, the property that appears last within the `ConfigMap` overwrites any preceding values.
+如果两个配置文件都处于活动状态，则“ConfigMap”中最后显示的属性将覆盖任何先前的值。
 
-
-To tell Spring Boot which `profile` should be enabled at bootstrap, you can pass a system property to the Java
-command. To do so, you can launch your Spring Boot application with an environment variable that you can define with the OpenShift
-`DeploymentConfig` or Kubernetes `ReplicationConfig` resource file, as follows:
-
+要告诉Spring Boot哪个`profile`应该在bootstrap中启用，你可以将系统属性传递给Java
+命令。为此，您可以使用可以使用OpenShift定义的环境变量启动Spring Boot应用程序
+`DeploymentConfig`或Kubernetes`ReplicationConfig`资源文件，如下：
 ====
 [source,yaml]
 ----
@@ -205,16 +197,16 @@ spec:
 ----
 ====
 
-NOTE: You should check the security configuration section. To access config maps from inside a pod you need to have the correct
-Kubernetes service accounts, roles and role bindings.
+注意：您应该检查安全配置部分。要从pod内部访问配置映射，您需要具有正确的配置映射
+Kubernetes服务帐户，角色和角色绑定。
 
-Another option for using `ConfigMap` instances is to mount them into the Pod by running the Spring Cloud Kubernetes application
-and having Spring Cloud Kubernetes read them from the file system.
-This behavior is controlled by the `spring.cloud.kubernetes.config.paths` property. You can use it in
-addition to or instead of the mechanism described earlier.
-You can specify multiple (exact) file paths in `spring.cloud.kubernetes.config.paths` by using the `,` delimiter.
+使用`ConfigMap`实例的另一个选择是通过运行Spring Cloud Kubernetes应用程序将它们安装到Pod中
+并让Spring Cloud Kubernetes从文件系统中读取它们。
+此行为由`spring.cloud.kubernetes.config.paths`属性控制。你可以使用它
+添加或替代前面描述的机制。
+您可以使用`，`分隔符在`spring.cloud.kubernetes.config.paths`中指定多个（确切的）文件路径。
 
-NOTE: You have to provide the full exact path to each property file, because directories are not being recursively parsed.
+注意：您必须提供每个属性文件的完整确切路径，因为目录不是递归解析的。
 
 .Properties:
 [options="header,footer"]
@@ -229,15 +221,14 @@ NOTE: You have to provide the full exact path to each property file, because dir
 
 === Secrets PropertySource
 
-Kubernetes has the notion of https://kubernetes.io/docs/concepts/configuration/secret/[Secrets] for storing
-sensitive data such as passwords, OAuth tokens, and so on. This project provides integration with `Secrets` to make secrets
-accessible by Spring Boot applications. You can explicitly enable or disable This feature by setting the `spring.cloud.kubernetes.secrets.enabled` property.
+Kubernetes有https://kubernetes.io/docs/concepts/configuration/secret/[Secrets]的概念用于存储
+敏感数据，如密码，OAuth令牌等。这个项目提供与“秘密”的集成来制造秘密
+可由Spring Boot应用程序访问。您可以通过设置`spring.cloud.kubernetes.secrets.enabled`属性来显式启用或禁用此功能。
 
-When enabled, the `SecretsPropertySource` looks up Kubernetes for `Secrets` from the following sources:
-
-. Reading recursively from secrets mounts
-. Named after the application (as defined by `spring.application.name`)
-. Matching some labels
+启用后，`SecretsPropertySource`从以下来源查找Kubernetes的`Secrets`：
+。从秘密安装中递归读取
+。在应用程序之后命名（由`spring.application.name`定义）
+。匹配一些标签
 
 Note that, by default, consuming Secrets through the API (points 2 and 3 above) *is not enabled* for security reasons.
 Further, we recommend that containers share secrets through mounted volumes.

@@ -1,8 +1,8 @@
 == Starters
 
-Starters are convenient dependency descriptors you can include in your
-application. Include a starter to get the dependencies and Spring Boot
-auto-configuration for a feature set.
+启动器是方便的依赖描述符，您可以在其中包含
+应用。包括一个启动器来获取依赖项和Spring Boot
+功能集的自动配置。
 
 [cols="a,d"]
 |===
@@ -15,8 +15,8 @@ auto-configuration for a feature set.
     <artifactId>spring-cloud-starter-kubernetes</artifactId>
 </dependency>
 ----
-| <<DiscoveryClient for Kubernetes,Discovery Client>> implementation that
-resolves service names to Kubernetes Services.
+| <<DiscoveryClient for Kubernetes,Discovery Client>> 实施
+将服务名称解析为Kubernetes Services。
 
 | [source,xml]
 ----
@@ -37,8 +37,8 @@ Secret changes.
     <artifactId>spring-cloud-starter-kubernetes-ribbon</artifactId>
 </dependency>
 ----
-| <<Ribbon discovery in Kubernetes,Ribbon>> client-side load balancer with
-server list obtained from Kubernetes Endpoints.
+| <<Ribbon discovery in Kubernetes,Ribbon>> 客户端负载均衡器
+从Kubernetes端点获得的服务器列表。
 
 | [source,xml]
 ----

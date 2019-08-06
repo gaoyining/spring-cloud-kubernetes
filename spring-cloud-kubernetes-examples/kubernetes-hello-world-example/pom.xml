@@ -57,9 +57,9 @@
 		</dependency>
 
 		<!--
-			We need that(actuator) so that it can be used in readiness probes.
-			Readiness checks are needed by arquillian, so that it
-			knows when to run the actual test.
+			我们需要（执行器），以便它可以用于准备探针。
+			arquillian需要准备检查，以便它
+			知道何时运行实际测试。
 		-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

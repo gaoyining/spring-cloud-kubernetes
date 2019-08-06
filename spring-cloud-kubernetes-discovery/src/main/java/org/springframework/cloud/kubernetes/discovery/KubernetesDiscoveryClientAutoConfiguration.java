@@ -29,7 +29,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Auto configuration for discovery clients.
+ *发现客户端的自动配置。
  *
  * @author Mauricio Salatino
  */
@@ -50,6 +50,7 @@ public class KubernetesDiscoveryClientAutoConfiguration {
 	public KubernetesClientServicesFunction servicesFunction(
 			KubernetesDiscoveryProperties properties) {
 		if (properties.getServiceLabels().isEmpty()) {
+			// 如果服务没有设置label
 			return KubernetesClient::services;
 		}
 

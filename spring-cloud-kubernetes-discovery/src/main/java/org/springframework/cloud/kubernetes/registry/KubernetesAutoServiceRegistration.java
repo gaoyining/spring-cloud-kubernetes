@@ -37,7 +37,7 @@ import org.springframework.core.Ordered;
  * @author Mauricio Salatino
  */
 @Deprecated
-// TODO Remove this class in 2.x as it is not used or necessary in Kubernetes
+// TODO 在2.x中删除此类，因为它在Kubernetes中未使用或不必要
 public class KubernetesAutoServiceRegistration
 		implements AutoServiceRegistration, SmartLifecycle, Ordered {
 

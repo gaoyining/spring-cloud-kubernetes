@@ -1,9 +1,11 @@
-== Pod Health Indicator
+== Pod健康指标
 
-Spring Boot uses https://github.com/spring-projects/spring-boot/blob/master/spring-boot-project/spring-boot-actuator/src/main/java/org/springframework/boot/actuate/health/HealthEndpoint.java[`HealthIndicator`] to expose info about the health of an application.
-That makes it really useful for exposing health-related information to the user and makes it a good fit for use as https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/[readiness probes].
+Spring Boot使用
+https://github.com/spring-projects/spring-boot/blob/master/spring-boot-project/spring-boot-actuator/src/main/java/org/springframework/boot/actuate/health /HealthEndpoint.java
+[`HealthIndicator`]公开有关应用程序运行状况的信息。
+这使得向用户公开与健康相关的信息非常有用，并使其非常适合用作https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/ [准备探针]。
 
-The Kubernetes health indicator (which is part of the core module) exposes the following info:
+Kubernetes运行状况指示器（它是核心模块的一部分）公开了以下信息：
 
-* Pod name, IP address, namespace, service account, node name, and its IP address
-* A flag that indicates whether the Spring Boot application is internal or external to Kubernetes
+* Pod名称，IP地址，名称空间，服务帐户，节点名称及其IP地址
+*一个标志，指示Spring Boot应用程序是Kubernetes的内部还是外部

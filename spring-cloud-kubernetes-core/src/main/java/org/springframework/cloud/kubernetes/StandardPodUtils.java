@@ -26,7 +26,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * Utility class to work with pods.
+ * 用于处理pod的实用程序类。
  *
  * @author Ioannis Canellos
  */

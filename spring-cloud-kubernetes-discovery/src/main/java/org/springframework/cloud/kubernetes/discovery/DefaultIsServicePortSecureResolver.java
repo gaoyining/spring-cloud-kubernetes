@@ -25,13 +25,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * TODO break up into delegates if the implementation get's more complicated
+ * 如果实现变得更复杂，TODO会分成代理
  * <p>
- * Returns true if one of the following conditions apply.
- * <p>
- * spring.cloud.kubernetes.discovery.secured has been set to true the service contains a
- * label or an annotation named 'secured' that is truthy the port is one of the known
- * ports used for secure communication
+ * 如果满足下列条件之一，则返回true。
+ *  * <p>
+ * spring.cloud.kubernetes.discovery.secured已设置为true，该服务包含一个
+ *标签或名为'secure'的注释，这是一个众所周知的端口之一
+ *用于安全通信的端口
  */
 class DefaultIsServicePortSecureResolver {
 
@@ -60,6 +60,7 @@ class DefaultIsServicePortSecureResolver {
 			if (log.isDebugEnabled()) {
 				log.debug("Considering service with name: " + input.getServiceName()
 						+ " and port " + input.getPort()
+					// 是安全的，因为该服务包含'安全'labe的真实值
 						+ " is secure since the service contains a true value for the 'secured' label");
 			}
 			return true;
@@ -71,6 +72,7 @@ class DefaultIsServicePortSecureResolver {
 			if (log.isDebugEnabled()) {
 				log.debug("Considering service with name: " + input.getServiceName()
 						+ " and port " + input.getPort()
+					// 因为服务包含“安全”注释的真实值，所以是安全的
 						+ " is secure since the service contains a true value for the 'secured' annotation");
 			}
 			return true;
@@ -81,6 +83,7 @@ class DefaultIsServicePortSecureResolver {
 			if (log.isDebugEnabled()) {
 				log.debug("Considering service with name: " + input.getServiceName()
 						+ " and port " + input.getPort()
+					// 由于端口是已知的https端口，因此是安全的
 						+ " is secure due to the port being a known https port");
 			}
 			return true;

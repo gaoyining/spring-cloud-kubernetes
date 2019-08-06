@@ -22,7 +22,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 /**
- * Bootstrap config for Kubernetes discovery config client.
+ * Kubernetes发现配置客户端的Bootstrap配置。
  *
  * @author Zhanwei Wang
  */
