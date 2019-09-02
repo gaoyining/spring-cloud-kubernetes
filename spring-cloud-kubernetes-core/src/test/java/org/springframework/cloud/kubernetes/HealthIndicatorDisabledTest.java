@@ -33,12 +33,13 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.not;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 		classes = App.class,
-		properties = { "management.endpoint.health.show-details=always" })
-public class HealthIndicatorTest {
+		properties = { "management.health.kubernetes.enabled=false" })
+public class HealthIndicatorDisabledTest {
 
 	@ClassRule
 	public static KubernetesServer server = new KubernetesServer();
@@ -63,14 +64,13 @@ public class HealthIndicatorTest {
 		System.setProperty(Config.KUBERNETES_AUTH_TRYSERVICEACCOUNT_SYSTEM_PROPERTY,
 				"false");
 		System.setProperty(Config.KUBERNETES_NAMESPACE_SYSTEM_PROPERTY, "test");
-		System.setProperty(Config.KUBERNETES_HTTP2_DISABLE, "true");
 	}
 
 	@Test
 	public void healthEndpointShouldContainKubernetes() {
 		this.webClient.get().uri("http://localhost:{port}/actuator/health", this.port)
 				.accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isOk()
-				.expectBody(String.class).value(containsString("kubernetes"));
+				.expectBody(String.class).value(not(containsString("kubernetes")));
 	}
 
 }

@@ -39,13 +39,14 @@ import static org.assertj.core.util.Lists.newArrayList;
 import static org.springframework.cloud.kubernetes.config.ConfigMapTestUtil.createFileWithContent;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = App.class, properties = {
-		"spring.application.name=configmap-path-example",
-		"spring.cloud.kubernetes.config.enableApi=false",
-		"spring.cloud.kubernetes.config.paths="
-				+ ConfigMapsFromFilePathsSpringBootTest.FIRST_FILE_NAME_FULL_PATH + ","
-				+ ConfigMapsFromFilePathsSpringBootTest.SECOND_FILE_NAME_FULL_PATH })
-public class ConfigMapsFromFilePathsSpringBootTest {
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+		classes = App.class,
+		properties = { "spring.application.name=configmap-path-example",
+				"spring.cloud.kubernetes.config.enableApi=false",
+				"spring.cloud.kubernetes.config.paths="
+						+ ConfigMapsFromFilePathsTests.FIRST_FILE_NAME_FULL_PATH + ","
+						+ ConfigMapsFromFilePathsTests.SECOND_FILE_NAME_FULL_PATH })
+public class ConfigMapsFromFilePathsTests {
 
 	protected static final String FILES_ROOT_PATH = "/tmp/scktests";
 
@@ -84,6 +85,7 @@ public class ConfigMapsFromFilePathsSpringBootTest {
 		System.setProperty(Config.KUBERNETES_AUTH_TRYSERVICEACCOUNT_SYSTEM_PROPERTY,
 				"false");
 		System.setProperty(Config.KUBERNETES_NAMESPACE_SYSTEM_PROPERTY, "test");
+		System.setProperty(Config.KUBERNETES_HTTP2_DISABLE, "true");
 
 		Files.createDirectories(Paths.get(FILES_ROOT_PATH));
 		createFileWithContent(FIRST_FILE_NAME_FULL_PATH,

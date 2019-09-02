@@ -14,42 +14,53 @@
  * limitations under the License.
  */
 
-package org.springframework.cloud.kubernetes;
+package org.springframework.cloud.kubernetes.config;
 
+import java.util.HashMap;
+
+import io.fabric8.kubernetes.api.model.ConfigMapBuilder;
 import io.fabric8.kubernetes.client.Config;
 import io.fabric8.kubernetes.client.KubernetesClient;
-import io.fabric8.kubernetes.server.mock.KubernetesServer;
+import io.fabric8.kubernetes.client.server.mock.KubernetesServer;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cloud.kubernetes.example.App;
-import org.springframework.http.MediaType;
+import org.springframework.cloud.kubernetes.config.example.App;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
-import static org.hamcrest.Matchers.containsString;
+import static org.springframework.cloud.kubernetes.config.ConfigMapTestUtil.readResourceFile;
 
+/**
+ * @author Charles Moulliard
+ */
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 		classes = App.class,
-		properties = { "management.endpoint.health.show-details=always" })
-public class HealthIndicatorTest {
+		properties = { "spring.application.name=configmap-with-profile-example",
+				"spring.cloud.kubernetes.reload.enabled=false" })
+@ActiveProfiles("development")
+@AutoConfigureWebTestClient
+public class ConfigMapsWithProfilesTests {
+
+	private static final String APPLICATION_NAME = "configmap-with-profile-example";
 
 	@ClassRule
 	public static KubernetesServer server = new KubernetesServer();
 
 	private static KubernetesClient mockClient;
 
+	@Autowired(required = false)
+	Config config;
+
 	@Autowired
 	private WebTestClient webClient;
-
-	@Value("${local.server.port}")
-	private int port;
 
 	@BeforeClass
 	public static void setUpBeforeClass() {
@@ -64,13 +75,27 @@ public class HealthIndicatorTest {
 				"false");
 		System.setProperty(Config.KUBERNETES_NAMESPACE_SYSTEM_PROPERTY, "test");
 		System.setProperty(Config.KUBERNETES_HTTP2_DISABLE, "true");
+
+		HashMap<String, String> data = new HashMap<>();
+		data.put("application.yml", readResourceFile("application-with-profiles.yaml"));
+		server.expect().withPath("/api/v1/namespaces/test/configmaps/" + APPLICATION_NAME)
+				.andReturn(200, new ConfigMapBuilder().withNewMetadata()
+						.withName(APPLICATION_NAME).endMetadata().addToData(data).build())
+				.always();
 	}
 
 	@Test
-	public void healthEndpointShouldContainKubernetes() {
-		this.webClient.get().uri("http://localhost:{port}/actuator/health", this.port)
-				.accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isOk()
-				.expectBody(String.class).value(containsString("kubernetes"));
+	public void testGreetingEndpoint() {
+		this.webClient.get().uri("/api/greeting").exchange().expectStatus().isOk()
+				.expectBody().jsonPath("content")
+				.isEqualTo("Hello ConfigMap dev, World!");
+	}
+
+	@Test
+	public void testFarewellEndpoint() {
+		this.webClient.get().uri("/api/farewell").exchange().expectStatus().isOk()
+				.expectBody().jsonPath("content")
+				.isEqualTo("Goodbye ConfigMap default, World!");
 	}
 
 }

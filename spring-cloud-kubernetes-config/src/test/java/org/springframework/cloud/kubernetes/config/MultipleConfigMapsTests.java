@@ -39,10 +39,11 @@ import org.springframework.test.web.reactive.server.WebTestClient;
  * @author Charles Moulliard
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = ExampleApp.class, properties = {
-		"spring.cloud.bootstrap.name=multiplecms" })
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+		classes = ExampleApp.class,
+		properties = { "spring.cloud.bootstrap.name=multiplecms" })
 @AutoConfigureWebTestClient
-public class MultipleConfigMapsSpringBootTest {
+public class MultipleConfigMapsTests {
 
 	@ClassRule
 	public static KubernetesServer server = new KubernetesServer();
@@ -64,6 +65,7 @@ public class MultipleConfigMapsSpringBootTest {
 		System.setProperty(Config.KUBERNETES_AUTH_TRYSERVICEACCOUNT_SYSTEM_PROPERTY,
 				"false");
 		System.setProperty(Config.KUBERNETES_NAMESPACE_SYSTEM_PROPERTY, "test");
+		System.setProperty(Config.KUBERNETES_HTTP2_DISABLE, "true");
 
 		createConfigmap(server, "s1", "defnamespace", new HashMap<String, String>() {
 			{

@@ -42,6 +42,13 @@ public class KubernetesProfileEnvironmentPostProcessor
 	@Override
 	public void postProcessEnvironment(ConfigurableEnvironment environment,
 			SpringApplication application) {
+
+		final String enabledStr = environment
+				.getProperty("spring.cloud.kubernetes.enabled", "true");
+		if ("false".equals(enabledStr.toLowerCase())) {
+			return;
+		}
+
 		final StandardPodUtils podUtils = new StandardPodUtils(
 				new DefaultKubernetesClient());
 		if (podUtils.isInsideKubernetes()) {

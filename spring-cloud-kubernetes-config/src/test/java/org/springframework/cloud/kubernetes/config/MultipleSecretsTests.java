@@ -17,6 +17,8 @@
 package org.springframework.cloud.kubernetes.config;
 
 import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
 
 import io.fabric8.kubernetes.api.model.Secret;
 import io.fabric8.kubernetes.api.model.SecretBuilder;
@@ -29,33 +31,37 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cloud.kubernetes.config.example.App;
-import org.springframework.core.env.Environment;
-import org.springframework.test.context.TestPropertySource;
+import org.springframework.cloud.kubernetes.config.example3.MultiSecretsApp;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.reactive.server.WebTestClient;
 
-import static java.util.Collections.singletonMap;
-import static org.assertj.core.api.Assertions.assertThat;
-
+/**
+ * @author Haytham Mohamed
+ */
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-		classes = App.class)
-@TestPropertySource("classpath:/application-secrets.properties")
-public class SecretsPropertySourceTest {
+		classes = MultiSecretsApp.class,
+		properties = { "spring.cloud.bootstrap.name=multiple-secrets" })
+@AutoConfigureWebTestClient
+public class MultipleSecretsTests {
 
-	private static final String NAMESPACE = "test";
+	private static final String DEFAULT_NAMESPACE = "ns1";
 
-	private static final String SECRET_VALUE = "secretValue";
+	private static final String ANOTHER_NAMESPACE = "ns2";
+
+	private static final String SECRET_VALUE_1 = "secretValue-1";
+
+	private static final String SECRET_VALUE_2 = "secretValue-2";
 
 	@ClassRule
 	public static KubernetesServer server = new KubernetesServer(false, true);
 
-	@Autowired
-	private SecretsPropertySourceLocator propertySourceLocator;
+	private static KubernetesClient mockClient;
 
 	@Autowired
-	private Environment environment;
+	private WebTestClient webClient;
 
 	@BeforeClass
 	public static void setUpBeforeClass() {
@@ -68,22 +74,54 @@ public class SecretsPropertySourceTest {
 		System.setProperty(Config.KUBERNETES_AUTH_TRYKUBECONFIG_SYSTEM_PROPERTY, "false");
 		System.setProperty(Config.KUBERNETES_AUTH_TRYSERVICEACCOUNT_SYSTEM_PROPERTY,
 				"false");
-		System.setProperty(Config.KUBERNETES_NAMESPACE_SYSTEM_PROPERTY, NAMESPACE);
+		System.setProperty(Config.KUBERNETES_NAMESPACE_SYSTEM_PROPERTY,
+				DEFAULT_NAMESPACE);
 		System.setProperty(Config.KUBERNETES_HTTP2_DISABLE, "true");
 
-		Secret secret = new SecretBuilder().withNewMetadata()
-				.withLabels(singletonMap("foo", "bar")).endMetadata()
-				.addToData("secretName",
-						Base64.getEncoder().encodeToString(SECRET_VALUE.getBytes()))
+		Map<String, String> metadata1 = new HashMap() {
+			{
+				put("env", "env1");
+				put("version", "1.0");
+			}
+		};
+
+		Secret secret1 = new SecretBuilder().withNewMetadata().withName("name1")
+				.withLabels(metadata1).endMetadata()
+				.addToData("secrets.secret1",
+						Base64.getEncoder().encodeToString(SECRET_VALUE_1.getBytes()))
 				.build();
-		mockClient.secrets().inNamespace(NAMESPACE).create(secret);
+
+		mockClient.secrets().inNamespace(DEFAULT_NAMESPACE).create(secret1);
+
+		Map<String, String> metadata2 = new HashMap() {
+			{
+				put("env", "env2");
+				put("version", "2.0");
+			}
+		};
+
+		Secret secret2 = new SecretBuilder().withNewMetadata().withName("name2")
+				.withLabels(metadata2).endMetadata()
+				.addToData("secrets.secret2",
+						Base64.getEncoder().encodeToString(SECRET_VALUE_2.getBytes()))
+				.build();
+
+		mockClient.secrets().inNamespace(ANOTHER_NAMESPACE).create(secret2);
 	}
 
 	@Test
-	public void toStringShouldNotExposeSecretValues() {
-		String actual = this.propertySourceLocator.locate(this.environment).toString();
+	public void testSecret1() {
+		assertResponse("/secret1", SECRET_VALUE_1);
+	}
 
-		assertThat(actual).doesNotContain(SECRET_VALUE);
+	@Test
+	public void testSecret2() {
+		assertResponse("/secret2", SECRET_VALUE_2);
+	}
+
+	private void assertResponse(String path, String expectedMessage) {
+		this.webClient.get().uri(path).exchange().expectStatus().isOk().expectBody()
+				.jsonPath("secret").isEqualTo(expectedMessage);
 	}
 
 }

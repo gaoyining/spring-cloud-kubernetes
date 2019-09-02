@@ -22,6 +22,7 @@ import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cloud.client.CommonsClientAutoConfiguration;
+import org.springframework.cloud.client.ConditionalOnDiscoveryEnabled;
 import org.springframework.cloud.client.discovery.simple.SimpleDiscoveryClientAutoConfiguration;
 import org.springframework.cloud.kubernetes.registry.KubernetesRegistration;
 import org.springframework.cloud.kubernetes.registry.KubernetesServiceRegistry;
@@ -29,11 +30,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- *发现客户端的自动配置。
+ * Auto configuration for discovery clients.
  *
  * @author Mauricio Salatino
+ * @author Tim Ysewyn
  */
 @Configuration
+@ConditionalOnDiscoveryEnabled
 @ConditionalOnProperty(name = "spring.cloud.kubernetes.enabled", matchIfMissing = true)
 @AutoConfigureBefore({ SimpleDiscoveryClientAutoConfiguration.class,
 		CommonsClientAutoConfiguration.class })
@@ -50,16 +53,29 @@ public class KubernetesDiscoveryClientAutoConfiguration {
 	public KubernetesClientServicesFunction servicesFunction(
 			KubernetesDiscoveryProperties properties) {
 		if (properties.getServiceLabels().isEmpty()) {
-			// 如果服务没有设置label
-			return KubernetesClient::services;
+			if (properties.isAllNamespaces()) {
+				return (client) -> client.services().inAnyNamespace();
+			}
+			else {
+				return KubernetesClient::services;
+			}
 		}
-
-		return (client) -> client.services().withLabels(properties.getServiceLabels());
+		else {
+			if (properties.isAllNamespaces()) {
+				return (client) -> client.services().inAnyNamespace()
+						.withLabels(properties.getServiceLabels());
+			}
+			else {
+				return (client) -> client.services()
+						.withLabels(properties.getServiceLabels());
+			}
+		}
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(name = "spring.cloud.kubernetes.discovery.enabled", matchIfMissing = true)
+	@ConditionalOnProperty(name = "spring.cloud.kubernetes.discovery.enabled",
+			matchIfMissing = true)
 	public KubernetesDiscoveryClient kubernetesDiscoveryClient(KubernetesClient client,
 			KubernetesDiscoveryProperties properties,
 			KubernetesClientServicesFunction kubernetesClientServicesFunction,
@@ -82,13 +98,6 @@ public class KubernetesDiscoveryClientAutoConfiguration {
 	@Bean
 	public KubernetesDiscoveryProperties getKubernetesDiscoveryProperties() {
 		return new KubernetesDiscoveryProperties();
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	@ConditionalOnProperty(name = "spring.cloud.kubernetes.discovery.catalog-services-watch.enabled", matchIfMissing = true)
-	public KubernetesCatalogWatch kubernetesCatalogWatch(KubernetesClient client) {
-		return new KubernetesCatalogWatch(client);
 	}
 
 }

@@ -16,10 +16,12 @@
 
 package org.springframework.cloud.kubernetes.ribbon;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import io.fabric8.kubernetes.api.model.EndpointsBuilder;
+import com.netflix.loadbalancer.ILoadBalancer;
+import com.netflix.loadbalancer.Server;
+import io.fabric8.kubernetes.api.model.IntOrString;
+import io.fabric8.kubernetes.api.model.ServiceBuilder;
 import io.fabric8.kubernetes.client.Config;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.server.mock.KubernetesServer;
@@ -32,32 +34,38 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.cloud.netflix.ribbon.SpringClientFactory;
+import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * @author Charles Moulliard
+ * the RibbonWithServiceModeTest description.
+ *
+ * @author wuzishu
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = TestApplication.class,
 		properties = { "spring.application.name=testapp",
 				"spring.cloud.kubernetes.client.namespace=testns",
 				"spring.cloud.kubernetes.client.trustCerts=true",
-				"spring.cloud.kubernetes.config.namespace=testns" })
+				"spring.cloud.kubernetes.config.namespace=testns",
+				"spring.cloud.kubernetes.enabled=true",
+				"spring.cloud.kubernetes.discovery.enabled=true",
+				"spring.cloud.kubernetes.ribbon.enabled=true",
+				"spring.cloud.kubernetes.ribbon.mode=SERVICE",
+				"spring.cloud.kubernetes.ribbon.clusterDomain=test.com" })
 @EnableAutoConfiguration
 @EnableDiscoveryClient
-public class RibbonTest {
+public class RibbonWithServiceModeTest {
 
 	@ClassRule
 	public static KubernetesServer server = new KubernetesServer();
 
 	@ClassRule
 	public static KubernetesServer mockEndpointA = new KubernetesServer(false);
-
-	@ClassRule
-	public static KubernetesServer mockEndpointB = new KubernetesServer(false);
 
 	private static KubernetesClient mockClient;
 
@@ -78,37 +86,31 @@ public class RibbonTest {
 		System.setProperty(Config.KUBERNETES_HTTP2_DISABLE, "true");
 
 		// Configured
-		server.expect().get().withPath("/api/v1/namespaces/testns/endpoints/testapp")
-				.andReturn(200,
-						new EndpointsBuilder().withNewMetadata().withName("testapp-a")
-								.endMetadata().addNewSubset().addNewAddress()
-								.withIp(mockEndpointA.getMockServer().getHostName())
-								.endAddress()
-								.addNewPort("http",
-										mockEndpointA.getMockServer().getPort(), "http")
-								.endSubset().addNewSubset().addNewAddress()
-								.withIp(mockEndpointB.getMockServer().getHostName())
-								.endAddress()
-								.addNewPort("http",
-										mockEndpointB.getMockServer().getPort(), "http")
-								.endSubset().build())
+		server.expect().get().withPath("/api/v1/namespaces/testns/services/testapp")
+				.andReturn(200, new ServiceBuilder().withNewMetadata().withName("testapp")
+						.withNamespace("testns").endMetadata().withNewSpec()
+						.addToSelector("app", "testapp-a").addNewPort().withName("http")
+						.withPort(mockEndpointA.getMockServer().getPort())
+						.withTargetPort(
+								new IntOrString(mockEndpointA.getMockServer().getPort()))
+						.withProtocol("TCP").endPort().endSpec().build())
 				.always();
 
-		mockEndpointA.expect().get().withPath("/greeting").andReturn(200, "Hello from A")
-				.always();
-		mockEndpointB.expect().get().withPath("/greeting").andReturn(200, "Hello from B")
-				.always();
 	}
 
-	@Test
-	public void testGreetingEndpoint() {
-		final List<String> greetings = new ArrayList<>();
-		greetings.add(
-				this.restTemplate.getForObject("http://testapp/greeting", String.class));
-		greetings.add(
-				this.restTemplate.getForObject("http://testapp/greeting", String.class));
+	@Autowired
+	private ApplicationContext context;
 
-		assertThat(greetings).containsOnly("Hello from A", "Hello from B");
+	@Test
+	public void testGreetingWithServiceMode() {
+		SpringClientFactory springClientFactory = context
+				.getBean(SpringClientFactory.class);
+		ILoadBalancer testapp = springClientFactory.getLoadBalancer("testapp");
+		List<Server> allServers = testapp.getAllServers();
+		assertThat(allServers.stream()
+				.map(c -> String.format("%s:%s", c.getHost(), c.getPort())))
+						.containsOnly("testapp.testns.svc.test.com:"
+								+ mockEndpointA.getMockServer().getPort());
 	}
 
 }

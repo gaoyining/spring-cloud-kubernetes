@@ -44,11 +44,11 @@ import static org.assertj.core.api.Assertions.fail;
  * @author Charles Moulliard
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = TestApplication.class, properties = {
-		"spring.application.name=testapp",
-		"spring.cloud.kubernetes.client.namespace=testns",
-		"spring.cloud.kubernetes.client.trustCerts=true",
-		"spring.cloud.kubernetes.config.namespace=testns" })
+@SpringBootTest(classes = TestApplication.class,
+		properties = { "spring.application.name=testapp",
+				"spring.cloud.kubernetes.client.namespace=testns",
+				"spring.cloud.kubernetes.client.trustCerts=true",
+				"spring.cloud.kubernetes.config.namespace=testns" })
 @EnableAutoConfiguration
 @EnableDiscoveryClient
 public class RibbonFallbackTest {
@@ -82,6 +82,7 @@ public class RibbonFallbackTest {
 		System.setProperty(Config.KUBERNETES_AUTH_TRYKUBECONFIG_SYSTEM_PROPERTY, "false");
 		System.setProperty(Config.KUBERNETES_AUTH_TRYSERVICEACCOUNT_SYSTEM_PROPERTY,
 				"false");
+		System.setProperty(Config.KUBERNETES_HTTP2_DISABLE, "true");
 
 		mockEndpoint = new DefaultMockServer(false);
 		mockEndpoint.start();

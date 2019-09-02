@@ -14,42 +14,36 @@
  * limitations under the License.
  */
 
-package org.springframework.cloud.kubernetes.ribbon;
+package org.springframework.cloud.kubernetes.discovery;
 
-import com.netflix.client.config.IClientConfig;
-import com.netflix.loadbalancer.ServerList;
 import io.fabric8.kubernetes.client.KubernetesClient;
 
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.cloud.client.ConditionalOnDiscoveryEnabled;
+import org.springframework.cloud.kubernetes.KubernetesAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Kubernetes version of a Ribbon client configuration.
+ * Auto configuration for catalog watcher.
  *
- * @author Ioannis Canellos
+ * @author Tim Ysewyn
  */
 @Configuration
-@EnableConfigurationProperties(KubernetesRibbonProperties.class)
-public class KubernetesRibbonClientConfiguration {
-
-	public KubernetesRibbonClientConfiguration() {
-	}
+@ConditionalOnDiscoveryEnabled
+@ConditionalOnProperty(name = "spring.cloud.kubernetes.enabled", matchIfMissing = true)
+@AutoConfigureAfter({ KubernetesAutoConfiguration.class })
+public class KubernetesCatalogWatchAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public ServerList<?> ribbonServerList(KubernetesClient client, IClientConfig config,
-			KubernetesRibbonProperties properties) {
-		KubernetesServerList serverList;
-		if (properties.getMode() == KubernetesRibbonMode.SERVICE) {
-			serverList = new KubernetesServicesServerList(client, properties);
-		}
-		else {
-			serverList = new KubernetesEndpointsServerList(client, properties);
-		}
-		serverList.initWithNiwsConfig(config);
-		return serverList;
+	@ConditionalOnProperty(
+			name = "spring.cloud.kubernetes.discovery.catalog-services-watch.enabled",
+			matchIfMissing = true)
+	public KubernetesCatalogWatch kubernetesCatalogWatch(KubernetesClient client) {
+		return new KubernetesCatalogWatch(client);
 	}
 
 }
